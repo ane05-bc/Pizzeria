@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from './context/AuthContext'; // Importar hook
 import { Login } from './components/auth/Login'; // Importar Login
 import { AdminSidebar } from './components/AdminSidebar';
-import { Dashboard } from './components/admin/Dashboard';
+// import { Dashboard } from './components/admin/Dashboard';
 import { Orders } from './components/admin/Orders';
 import { Menu } from './components/admin/Menu';
 import { Reservations } from './components/admin/Reservations';
@@ -20,8 +20,8 @@ export default function App() {
 
   const renderAdminView = () => {
     switch (adminView) {
-      case 'dashboard':
-        return <Dashboard />;
+      // case 'dashboard':
+      //   return <Dashboard />;
       case 'orders':
         return <Orders />;
       case 'menu':
@@ -37,7 +37,8 @@ export default function App() {
       case 'logs': // Nuevo case
         return <Logs />;
       default:
-        return <Dashboard />;
+        return <Orders/>;
+        // return <Dashboard />;
     }
   };
 
@@ -45,7 +46,6 @@ export default function App() {
   if (!user) {
     return <Login />;
   }
-
   // 2. Si el usuario es cliente, mostrar CustomerView
   if (user.role === 'customer') {
     return (

@@ -1,3 +1,4 @@
+// PANEL DE ADMNISTRACION De ADMIN
 import { 
   LayoutDashboard, 
   ShoppingBag, 
@@ -19,7 +20,7 @@ interface AdminSidebarProps {
 
 // Menú actualizado
 const menuItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  // { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'orders', label: 'Registrar Pedido', icon: ShoppingBag }, // Etiqueta actualizada para claridad
   { id: 'menu', label: 'Menú', icon: Pizza },
   { id: 'reservations', label: 'Reservas', icon: Calendar },

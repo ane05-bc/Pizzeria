@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+// import logo from '../../assets/logo_MrPizza.png';
+
 import { Pizza } from 'lucide-react';
 
 // Asumo que tienes componentes UI básicos, si no, reemplaza con <button>, <input>, etc.
@@ -11,7 +13,7 @@ import { Pizza } from 'lucide-react';
 
 export function Login() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState(''); // Contraseña no se usa en la simulación, pero es estándar
+  const [password, setPassword] = useState(''); 
   const [error, setError] = useState('');
   const { login } = useAuth();
 
@@ -20,7 +22,7 @@ export function Login() {
     setError('');
     const success = login(email);
     if (!success) {
-      setError('Usuario no encontrado. Intente con: admin@pizzeria.com, empleado@pizzeria.com, o cliente@pizzeria.com');
+      setError('Usuario no encontrado. Intente con el dominio de @pizzeria (Ej: admin@pizzeria.com, empleado@pizzeria.com, o cliente@pizzeria.com)');
     }
   };
 
@@ -30,6 +32,11 @@ export function Login() {
         <div className="flex flex-col items-center">
           <div className="p-3 bg-gradient-to-r from-orange-600 to-orange-700 rounded-full">
             <Pizza className="w-10 h-10 text-white" />
+            {/* <img
+                src={logo}
+                alt="Logo de la pizzería"
+                className="w-10 h-10 rounded-full object-cover"
+              /> */}
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mt-4">Bienvenido a La Pizzería</h1>
           <p className="text-gray-500">Inicia sesión para continuar</p>
