@@ -1,18 +1,26 @@
 import { useState } from 'react';
-import { CustomerHeader } from './CustomerHeader';
-import { PizzaCard } from './PizzaCard';
+// Importa SectionId de tu header. Asumiré que lo exportaste como te mostré.
+import { CustomerHeader, SectionId } from './CustomerHeader';
 import { Cart } from './Cart';
-import { Reviews } from './Reviews';
+import { Reviews } from './Reviews'; // Ya tenías este
 import { pizzas, drinks } from '../../data/mockData';
 import { CartItem } from '../../types';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { Card, CardContent } from '../ui/card';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
-import { Button } from '../ui/button';
+
+// --- Importa las nuevas secciones ---
+import { MenuSection } from './MenuSection';
+import { LocationSection } from './LocationSection';
+import { AboutUsSection } from './AboutUs';
+
+// El tipo de vista ahora incluye las secciones del header y el carrito
+type View = SectionId | 'cart';
 
 export function CustomerView() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [currentView, setCurrentView] = useState<'menu' | 'cart' | 'reviews'>('menu');
+  // El estado ahora usa el nuevo tipo 'View'. Empezamos en 'menu'.
+  const [currentView, setCurrentView] = useState<View>('menu');
+
+  // --- TODAS TUS FUNCIONES DE CARRITO SE MANTIENEN IGUAL ---
+  // (addToCart, addDrinkToCart, removeFromCart, clearCart, handleCheckout)
 
   const addToCart = (
     pizzaId: string,
@@ -22,11 +30,9 @@ export function CustomerView() {
   ) => {
     const pizza = pizzas.find(p => p.id === pizzaId);
     if (!pizza) return;
-
     const basePrice = pizza.sizes[size];
     const extrasPrice = extras.length * 1.50;
     const totalPrice = basePrice + extrasPrice;
-
     const cartItem: CartItem = {
       productId: pizza.id,
       name: pizza.name,
@@ -36,14 +42,12 @@ export function CustomerView() {
       price: totalPrice,
       extras
     };
-
     setCartItems([...cartItems, cartItem]);
   };
 
   const addDrinkToCart = (drinkId: string) => {
     const drink = drinks.find(d => d.id === drinkId);
     if (!drink) return;
-
     const cartItem: CartItem = {
       productId: drink.id,
       name: drink.name,
@@ -52,7 +56,6 @@ export function CustomerView() {
       price: drink.price,
       extras: []
     };
-
     setCartItems([...cartItems, cartItem]);
   };
 
@@ -80,7 +83,46 @@ export function CustomerView() {
       `Recibirás tu pedido en 30-45 minutos.`
     );
     clearCart();
-    setCurrentView('menu');
+    setCurrentView('menu'); // Vuelve al menú después de pagar
+  };
+  
+  // --- FIN DE LAS FUNCIONES DE CARRITO ---
+
+
+  // Función para renderizar el contenido principal
+  const renderContent = () => {
+    // Si la vista es 'cart', muestra el carrito
+    if (currentView === 'cart') {
+      return (
+        <Cart
+          items={cartItems}
+          onRemoveItem={removeFromCart}
+          onClearCart={clearCart}
+          onCheckout={handleCheckout}
+          onBackToMenu={() => setCurrentView('menu')} // Vuelve al menú
+        />
+      );
+    }
+
+    // Si no es el carrito, muestra la sección correspondiente
+    switch (currentView) {
+      case 'menu':
+        // Pasamos las funciones que necesita el menú
+        return (
+          <MenuSection 
+            onAddToCart={addToCart} 
+            onAddDrinkToCart={addDrinkToCart} 
+          />
+        );
+      case 'reviews':
+        return <Reviews />; // Reutilizamos tu componente existente
+      case 'location':
+        return <LocationSection />;
+      case 'about':
+        return <AboutUsSection />;
+      default:
+        return <MenuSection onAddToCart={addToCart} onAddDrinkToCart={addDrinkToCart} />;
+    }
   };
 
   return (
@@ -88,104 +130,15 @@ export function CustomerView() {
       <CustomerHeader 
         cartItemCount={cartItems.length} 
         onCartClick={() => setCurrentView('cart')}
+        // --- Conectamos el header al estado de esta vista ---
+        onNavigate={(section) => setCurrentView(section)}
+        activeSection={currentView === 'cart' ? 'menu' : currentView}
       />
 
-      {currentView === 'cart' ? (
-        <Cart
-          items={cartItems}
-          onRemoveItem={removeFromCart}
-          onClearCart={clearCart}
-          onCheckout={handleCheckout}
-          onBackToMenu={() => setCurrentView('menu')} 
-        />
-      ) : currentView === 'reviews' ? (
-        <Reviews />
-      ) : (
-        <div className="container mx-auto px-6 py-8">
-          {/* Hero Section */}
-          <div className="mb-12 text-center">
-            <h2 className="text-orange-900 mb-4">Nuestro Menú</h2>
-            <p className="text-orange-700 max-w-2xl mx-auto">
-              Descubre nuestras pizzas artesanales, elaboradas con ingredientes frescos 
-              y recetas tradicionales italianas
-            </p>
-          </div>
-
-          {/* Navigation Tabs */}
-          <div className="flex justify-center gap-4 mb-8">
-            <Button
-              onClick={() => setCurrentView('menu')}
-              className={currentView === 'menu' ? 'bg-orange-600' : 'bg-orange-400'}
-            >
-              Menú
-            </Button>
-            <Button
-              onClick={() => setCurrentView('reviews')}
-              //className={currentView === 'reviews' ? 'bg-orange-600' : 'bg-orange-400'}
-            >
-              Reseñas
-            </Button>
-          </div>
-
-          <Tabs defaultValue="pizzas" className="w-full">
-            <TabsList className="bg-white border border-orange-200 mb-8">
-              <TabsTrigger 
-                value="pizzas" 
-                className="data-[state=active]:bg-orange-600 data-[state=active]:text-white"
-              >
-                Pizzas
-              </TabsTrigger>
-              <TabsTrigger 
-                value="drinks" 
-                className="data-[state=active]:bg-orange-600 data-[state=active]:text-white"
-              >
-                Bebidas
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="pizzas">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {pizzas.map((pizza) => (
-                  <PizzaCard
-                    key={pizza.id}
-                    pizza={pizza}
-                    onAddToCart={addToCart}
-                  />
-                ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="drinks">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {drinks.map((drink) => (
-                  <Card key={drink.id} className="border-orange-200 bg-white overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="relative h-56">
-                      <ImageWithFallback
-                        src={drink.image}
-                        alt={drink.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <CardContent className="p-6">
-                      <h3 className="text-orange-900 mb-2">{drink.name}</h3>
-                      <p className="text-orange-600 mb-4">{drink.description}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-orange-900">€{drink.price.toFixed(2)}</span>
-                        <Button
-                          onClick={() => addDrinkToCart(drink.id)}
-                          className="bg-orange-600 hover:bg-orange-700"
-                        >
-                          Agregar
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      )}
+      {/* El contenido principal ahora se renderiza aquí */}
+      <main className="container mx-auto px-6 py-8">
+        {renderContent()}
+      </main>
     </div>
   );
 }

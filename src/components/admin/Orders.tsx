@@ -7,8 +7,8 @@ import { PizzaType, Ingredient } from '../../types';
 
 const SENDER_DATA = {
   razonSocial: 'Mr. Pizza S.R.L.',
-  nif: '30-12345678-9',
-  domicilio: 'Av. Siempre Viva 742',
+  nif: '30-0000000000',
+  domicilio: 'AV. HERNANDO SILES ESQ CALLE 9 EDIF. VISION MODERNA',
   condicionIVA: 'Responsable Inscripto',
 };
 
@@ -85,7 +85,7 @@ export function Orders() {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     if (!customerName) newErrors.customerName = 'El nombre es obligatorio.';
-    if (!customerNIF) newErrors.customerNIF = 'El NIF/CUIT es obligatorio.';
+    if (!customerNIF) newErrors.customerNIF = 'El NIT del cliente es obligatorio.';
     if (!selectedPizzaId) newErrors.pizza = 'Debe seleccionar una pizza.';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -160,8 +160,8 @@ export function Orders() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
               <p><strong>Razón Social:</strong> {SENDER_DATA.razonSocial}</p>
-              <p><strong>NIF:</strong> {SENDER_DATA.nif}</p>
-              <p><strong>Domicilio:</strong> {SENDER_DATA.domicilio}</p>
+              <p><strong>NIT:</strong> {SENDER_DATA.nif}</p>
+              <p><strong>Ubicación:</strong> {SENDER_DATA.domicilio}</p>
               <p><strong>Condición IVA:</strong> {SENDER_DATA.condicionIVA}</p>
             </div>
           </CardContent>
@@ -181,7 +181,7 @@ export function Orders() {
                   <Input value={customerName} onChange={e => setCustomerName(e.target.value)} />
                   <ErrorMsg field="customerName" />
                 </FormField>
-                <FormField label="NIF / CUIT / RUC">
+                <FormField label="NIT">
                   <Input value={customerNIF} onChange={e => setCustomerNIF(e.target.value)} />
                   <ErrorMsg field="customerNIF" />
                 </FormField>

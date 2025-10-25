@@ -12,8 +12,6 @@ import { UserManagement } from './components/admin/UserManagement'; // Importar 
 import { Logs } from './components/admin/Logs'; // Importar nuevo
 import { CustomerView } from './components/customer/CustomerView';
 
-// (Los componentes Customers y Employees ya no se importan)
-
 export default function App() {
   const { user } = useAuth(); // Obtener el usuario del contexto
   const [adminView, setAdminView] = useState('dashboard');

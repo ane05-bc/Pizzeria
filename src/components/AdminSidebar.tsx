@@ -2,7 +2,7 @@
 import { 
   LayoutDashboard, 
   ShoppingBag, 
-  Pizza, 
+  Pizza,
   Calendar, 
   UserCog, // Se usará para Gestión de Usuarios
   Package, 
@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { cn } from './ui/utils';
 import { useAuth } from '../context/AuthContext'; // Importar el hook de autenticación
+import { Logo } from '@/components/common/Logo2';
 
 interface AdminSidebarProps {
   currentView: string;
@@ -34,12 +35,12 @@ export function AdminSidebar({ currentView, onViewChange }: AdminSidebarProps) {
   const { user, logout } = useAuth(); // Obtener usuario y función logout
 
   return (
-    <div className="h-screen w-64 bg-gradient-to-b from-orange-600 to-orange-700 text-white flex flex-col shadow-xl">
-      <div className="p-6 border-b border-orange-500">
+    <div className="h-screen w-64 bg-gradient-to-b from-green to-green text-black flex flex-col shadow-xl">
+      <div className="p-6 border-b border-green-200">
         <div className="flex items-center gap-3">
-          <Pizza className="w-8 h-8" />
+          <Logo size={80} rounded bordered />
           <div>
-            <h1 className="tracking-tight">La Pizzería</h1>
+            <h1 className="tracking-tight">Mr Pizza</h1>
             <p className="text-orange-200 opacity-90">Panel Admin</p>
           </div>
         </div>
@@ -55,7 +56,7 @@ export function AdminSidebar({ currentView, onViewChange }: AdminSidebarProps) {
               className={cn(
                 "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all",
                 currentView === item.id
-                  ? "bg-white text-orange-600 shadow-lg"
+                  ? "bg-red-500 text-white shadow-lg"
                   : "text-white hover:bg-orange-500/50"
               )}
             >

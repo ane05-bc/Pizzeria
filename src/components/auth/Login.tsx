@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-// import logo from '../../assets/logo_MrPizza.png';
-
-import { Pizza } from 'lucide-react';
-
-// Asumo que tienes componentes UI básicos, si no, reemplaza con <button>, <input>, etc.
+import { Logo } from '@/components/common/Logo';
+// Componentes UI básicos, si no, reemplaza con <button>, <input>, etc.
 // import { Button } from '../ui/button'; 
 // import { Input } from '../ui/input';
 // import { Label } from '../ui/label';
@@ -30,16 +27,10 @@ export function Login() {
     <div className="min-h-screen flex items-center justify-center bg-orange-50">
       <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-xl rounded-lg border border-orange-200">
         <div className="flex flex-col items-center">
-          <div className="p-3 bg-gradient-to-r from-orange-600 to-orange-700 rounded-full">
-            <Pizza className="w-10 h-10 text-white" />
-            {/* <img
-                src={logo}
-                alt="Logo de la pizzería"
-                className="w-10 h-10 rounded-full object-cover"
-              /> */}
-          </div>
-          <h1 className="text-3xl font-bold text-gray-800 mt-4">Bienvenido a La Pizzería</h1>
-          <p className="text-gray-500">Inicia sesión para continuar</p>
+            <Logo size={80} rounded bordered />
+          <h1 className="text-3xl font-bold text-gray-800 mt-4"><b>Bienvenido a Mr. Pizza</b></h1>
+          <h6 className='text- 3x1 font-bold text-gray-800 mt-4'> ¡El Señor Sabor!</h6>
+          <p className="text-gray-500">Inicia sesión para continuar ...</p>
         </div>
         
         <form className="space-y-4" onSubmit={handleSubmit}>
