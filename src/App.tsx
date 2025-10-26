@@ -11,12 +11,13 @@ import { Purchases } from './components/admin/Purchases';
 import { UserManagement } from './components/admin/UserManagement'; // Importar nuevo
 import { Logs } from './components/admin/Logs'; // Importar nuevo
 import { CustomerView } from './components/customer/CustomerView';
+import { useMemo } from 'react';
 
 export default function App() {
   const { user } = useAuth(); // Obtener el usuario del contexto
   const [adminView, setAdminView] = useState('dashboard');
 
-  const renderAdminView = () => {
+  const adminViewComponent = useMemo (() => {
     switch (adminView) {
       // case 'dashboard':
       //   return <Dashboard />;
@@ -38,7 +39,7 @@ export default function App() {
         return <Orders/>;
         // return <Dashboard />;
     }
-  };
+  }, [adminView] );
 
   // 1. Si no hay usuario, mostrar Login
   if (!user) {
@@ -60,7 +61,7 @@ export default function App() {
       <div className="min-h-screen bg-orange-50 flex">
         <AdminSidebar currentView={adminView} onViewChange={setAdminView} />
         <div className="flex-1 overflow-auto h-screen">
-          {renderAdminView()}
+          {adminViewComponent}
         </div>
       </div>
     );

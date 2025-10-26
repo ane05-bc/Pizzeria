@@ -28,6 +28,8 @@ const TAX_RATE = 0.16; // 16%
 // --- Componente ---
 
 export function Orders() {
+  console.log("Renderizando <Orders>");
+
   // Estado del formulario
   const [customerName, setCustomerName] = useState('');
   const [customerNIF, setCustomerNIF] = useState('');
@@ -178,7 +180,14 @@ export function Orders() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField label="Nombre o Razón Social">
-                  <Input value={customerName} onChange={e => setCustomerName(e.target.value)} />
+                                    <input
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    className="border p-2"
+                  />
+
+                  {/* <Input value={customerName} onChange={e => setCustomerName(e.target.value)} /> */}
                   <ErrorMsg field="customerName" />
                 </FormField>
                 <FormField label="NIT">

@@ -1,5 +1,5 @@
 //identificacion de quien esta logeado 
-import { createContext, useState, useContext, ReactNode } from 'react';
+import { createContext, useState, useContext, ReactNode, useMemo } from 'react';
 import { User, UserRole } from '../types';
 
 // Datos de usuario simulados para el login
@@ -39,8 +39,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
+  const value = useMemo(
+    () => ({ user, login, logout }),
+  [user]
+  );
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value= {value}>
       {children}
     </AuthContext.Provider>
   );
