@@ -120,7 +120,7 @@ export interface Review {
 }
 
 // Define los roles de usuario permitidos en el sistema
-export type UserRole = 'admin' | 'employee' | 'customer';
+export type UserRole = 'Administrador' | 'Cajero' | 'Cliente' |'Gerente'|'Repartidor'|'Cocinero';
 
 // Define la estructura de un objeto de usuario
 export interface User {

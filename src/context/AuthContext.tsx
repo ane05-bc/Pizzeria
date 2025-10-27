@@ -1,56 +1,54 @@
-//identificacion de quien esta logeado 
 import { createContext, useState, useContext, ReactNode, useMemo } from 'react';
 import { User, UserRole } from '../types';
-
-// Datos de usuario simulados para el login
-const MOCK_USERS: Record<string, User> = {
-  'admin@pizzeria.com': { id: 'u1', username: 'Admin User', email: 'admin@pizzeria.com', role: 'admin' },
-  'empleado@pizzeria.com': { id: 'u2', username: 'Empleado Uno', email: 'empleado@pizzeria.com', role: 'employee' },
-  'cliente@pizzeria.com': { id: 'u3', username: 'Cliente Fiel', email: 'cliente@pizzeria.com', role: 'customer' },
-};
 
 // Define la forma del contexto
 interface AuthContextType {
   user: User | null;
-  login: (email: string) => boolean; // Simulación de login
+  access_token: string | null;
+  sessionId: string | null;
+  login: (data: { user: User; access_token: string; sessionId: string }) => void;
   logout: () => void;
 }
 
 // Crea el contexto
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Define el "Proveedor" del contexto, que envolverá la aplicación
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [access_token, setAccessToken] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
-  // Función de login simulada
-  const login = (email: string) => {
-    const foundUser = MOCK_USERS[email.toLowerCase()];
-    if (foundUser) {
-      setUser(foundUser);
-      return true;
-    }
-    setUser(null);
-    return false;
+  // Función de login actualizada
+  const login = (data: { user: User; access_token: string; sessionId: string }) => {
+    setUser(data.user);
+    setAccessToken(data.access_token);
+    setSessionId(data.sessionId);
+    // Opcional: Guardar en localStorage para persistencia
+    localStorage.setItem('access_token', data.access_token);
+    localStorage.setItem('sessionId', data.sessionId);
   };
 
   // Función de logout
   const logout = () => {
     setUser(null);
+    setAccessToken(null);
+    setSessionId(null);
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('sessionId');
   };
 
   const value = useMemo(
-    () => ({ user, login, logout }),
-  [user]
+    () => ({ user, access_token, sessionId, login, logout }),
+    [user, access_token, sessionId]
   );
+
   return (
-    <AuthContext.Provider value= {value}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-// Hook personalizado para acceder fácilmente al contexto
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
