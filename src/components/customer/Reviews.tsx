@@ -128,7 +128,7 @@ export function Reviews() {
                 />
               </div>
 
-              <Button type="submit" className="bg-destructive hover:bg-destructive/90 text-white">
+              <Button type="submit" className="bg-orange-600 hover:bg-orange-700 text-white">
                 Publicar Reseña
               </Button>
             </form>
