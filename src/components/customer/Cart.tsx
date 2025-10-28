@@ -54,7 +54,7 @@ export function Cart({ items, onRemoveItem, onClearCart, onCheckout, onBackToMen
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-6" />
               <h3 className="text-orange-900 text-3xl font-bold mb-3">¡Pedido Confirmado con Éxito!</h3>
               <p className="text-orange-700 text-lg max-w-lg mx-auto mb-6">
-                Tu orden ha sido enviada a cocina. El total de **€{total.toFixed(2)}** será cobrado mediante **{paymentMethod}** y será entregado en **{deliveryAddress}** en un tiempo estimado de 30-45 minutos. ¡Gracias por tu compra!
+                Tu orden ha sido enviada a cocina. El total de €{total.toFixed(2)} será cobrado mediante {paymentMethod} y será entregado en {deliveryAddress} en un tiempo estimado de 30-45 minutos. ¡Gracias por tu compra! :D
               </p>
               <Button
                 onClick={() => {

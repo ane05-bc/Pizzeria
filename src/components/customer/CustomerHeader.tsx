@@ -60,18 +60,17 @@ export function CustomerHeader({
 
   return (
     // <<<< AJUSTES DEL HEADER: Se mantiene el guinda, se añaden transiciones y transparencia al scroll.
-    <header 
-      className={`
-        bg-gradient-to-r from-red-header to-red-header 
-        text-white sticky top-0 z-50 shadow-xl p-0 w-full
-        transition-all duration-300
-        ${isScrolled 
-          // <<<< CORRECCIÓN SCROLL: Al hacer scroll, forzamos un fondo semi-transparente sobre el gradiente
-          ? 'rounded-b-xl opacity-95 backdrop-blur-sm' 
-          : 'rounded-b-none'
-        }
-      `}
-    >
+<header 
+  className={`
+    text-white sticky top-0 z-50 shadow-xl p-0 w-full
+    transition-all duration-300
+    ${isScrolled 
+      ? 'rounded-b-xl opacity-95 backdrop-blur-sm' 
+      : 'rounded-b-none'
+    }
+  `}
+  style={{ background: 'linear-gradient(to right, #8B1538, #8B1538)' }}
+>
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           

@@ -7,9 +7,9 @@ import { Reviews } from './Reviews';
 import { desserts, drinks, pizzas } from '../../data/mockData';
 import { CartItem } from '../../types'; // <<<< CORRECCIÓN: Se añaden los tipos faltantes (Pizza, Drink, Dessert)
 import { AboutUsSection } from './AboutUs';
+import CustomerFooter from './CustomerFooter';
 import { LocationSection } from './LocationSection';
 import { MenuSection } from './MenuSection';
-
 
 // El tipo de vista ahora incluye las secciones del header y el carrito
 type View = SectionId | 'cart';
@@ -207,20 +207,21 @@ export function CustomerView() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-orange-50/30">
-      <CustomerHeader 
-        cartItemCount={cartItems.length} 
-        onCartClick={() => setCurrentView('cart')}
-        onNavigate={(section) => setCurrentView(section)}
-        // <<<< MODIFICACIÓN CLAVE: Pasamos la vista actual y el activo
-        activeSection={currentView === 'cart' ? 'menu' : currentView as SectionId}
-        currentView={currentView} // <<<< PASAMOS EL ESTADO COMPLETO PARA CONTROLAR EL BADGE
-      />
+return (
+  <div className="min-h-screen bg-orange-50/30 flex flex-col">
+    <CustomerHeader 
+      cartItemCount={cartItems.length} 
+      onCartClick={() => setCurrentView('cart')}
+      onNavigate={(section) => setCurrentView(section)}
+      activeSection={currentView === 'cart' ? 'menu' : currentView as SectionId}
+      currentView={currentView}
+    />
 
-      <main className="container mx-auto px-6 py-8">
-        {renderContent()}
-      </main>
-    </div>
-  );
+    <main className="container mx-auto px-6 py-8 flex-grow mb-12"> {/* <<<< AÑADIR mb-12 aquí */}
+      {renderContent()}
+    </main>
+    
+    <CustomerFooter onNavigate={(section) => setCurrentView(section)} />
+  </div>
+);
 }
