@@ -16,9 +16,9 @@ export interface Drink {
   id: string;
   name: string;
   description: string;
-  image: string;
   price: number;
-  available: boolean;
+  image: string;
+  category: string;
 }
 
 export interface Dessert {
@@ -27,6 +27,7 @@ export interface Dessert {
   description: string;
   price: number;
   image: string;
+  category: string;
 }
 
 export interface Order {
