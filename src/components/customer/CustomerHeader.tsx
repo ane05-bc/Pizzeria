@@ -66,14 +66,14 @@ export function CustomerHeader({
         transition-all duration-500 ease-in-out
         ${isScrolled ? 'opacity-95 backdrop-blur-sm' : ''}
       `}
-      style={{ 
-        background: isScrolled 
-          ? 'rgba(139, 21, 56, 0.95)'
-          : '#8B1538',
-        borderBottomLeftRadius: isScrolled ? '0.75rem' : '0',
-        borderBottomRightRadius: isScrolled ? '0.75rem' : '0',
-        transition: 'all 0.5s ease-in-out'
-      }}
+style={{ 
+  background: isScrolled 
+    ? 'rgba(139, 21, 56, 0.95)'
+    : '#8B1538', // Siempre rojo vino
+  borderBottomLeftRadius: isScrolled ? '0.75rem' : '0',
+  borderBottomRightRadius: isScrolled ? '0.75rem' : '0',
+  transition: 'all 0.5s ease-in-out'
+}}
     >
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
@@ -121,29 +121,6 @@ export function CustomerHeader({
             >
               <Utensils className="w-5 h-5" /> Menú
             </a>
-
-                        <a 
-              onClick={() => onNavigate('location')} 
-              className={`flex items-center gap-2 text-lg font-medium px-3 py-2 rounded-md cursor-pointer transition-all duration-300 ease-in-out ${activeSection === 'location' ? 'bg-black/10' : ''}`}
-              style={{ 
-                color: activeSection === 'location' ? '#FDE047' : '#FFFFFF',
-                transition: 'color 0.3s ease, background-color 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                if (activeSection !== 'location') {
-                  e.currentTarget.style.color = '#FDE047';
-                  e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (activeSection !== 'location') {
-                  e.currentTarget.style.color = '#FFFFFF';
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                }
-              }}
-            >
-              <MapPin className="w-5 h-5" /> Ubicación
-            </a>
             
             <a 
               onClick={() => onNavigate('reviews')} 
@@ -168,6 +145,28 @@ export function CustomerHeader({
               <StarHalf className="w-5 h-5" /> Reseñas
             </a>
             
+            <a 
+              onClick={() => onNavigate('location')} 
+              className={`flex items-center gap-2 text-lg font-medium px-3 py-2 rounded-md cursor-pointer transition-all duration-300 ease-in-out ${activeSection === 'location' ? 'bg-black/10' : ''}`}
+              style={{ 
+                color: activeSection === 'location' ? '#FDE047' : '#FFFFFF',
+                transition: 'color 0.3s ease, background-color 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                if (activeSection !== 'location') {
+                  e.currentTarget.style.color = '#FDE047';
+                  e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeSection !== 'location') {
+                  e.currentTarget.style.color = '#FFFFFF';
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }
+              }}
+            >
+              <MapPin className="w-5 h-5" /> Ubicación
+            </a>
             
             <a 
               onClick={() => onNavigate('about')} 

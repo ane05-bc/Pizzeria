@@ -208,7 +208,7 @@ export function CustomerView() {
   };
 
 return (
-  <div className="min-h-screen bg-orange-50/30 flex flex-col">
+  <div className="min-h-screen bg-background flex flex-col">
     <CustomerHeader 
       cartItemCount={cartItems.length} 
       onCartClick={() => setCurrentView('cart')}

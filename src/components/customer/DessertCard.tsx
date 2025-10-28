@@ -29,7 +29,7 @@ export function DessertCard({ dessert, onAddDessertToCart }: DessertCardProps) {
 
   return (
     <>
-      <Card className="border-orange-200 bg-white overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+      <Card className="bg-card border-border overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
         <div 
           className="relative h-56 overflow-hidden"
           onClick={() => setIsDialogOpen(true)}
@@ -44,14 +44,14 @@ export function DessertCard({ dessert, onAddDessertToCart }: DessertCardProps) {
           </Badge>
         </div>
         <CardHeader>
-          <CardTitle className="text-orange-900">{dessert.name}</CardTitle>
-          <p className="text-orange-600">{dessert.description}</p>
+          <CardTitle className="text-card-foreground">{dessert.name}</CardTitle>
+          <p className="text-muted-foreground">{dessert.description}</p>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-orange-700">Precio</p>
-              <p className="text-orange-900">€{dessert.price.toFixed(2)}</p>
+              <p className="text-muted-foreground">Precio</p>
+              <p className="text-card-foreground font-semibold">€{dessert.price.toFixed(2)}</p>
             </div>
             <Button 
               onClick={() => setIsDialogOpen(true)}
@@ -65,9 +65,9 @@ export function DessertCard({ dessert, onAddDessertToCart }: DessertCardProps) {
 
       {/* Customization Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl bg-white max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl bg-card max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-orange-900">{dessert.name}</DialogTitle>
+            <DialogTitle className="text-card-foreground">{dessert.name}</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-6">
@@ -80,7 +80,7 @@ export function DessertCard({ dessert, onAddDessertToCart }: DessertCardProps) {
             </div>
 
             <div>
-              <Label className="text-orange-900 mb-3 block">Cantidad</Label>
+              <Label className="text-card-foreground mb-3 block">Cantidad</Label>
               <div className="flex items-center gap-4">
                 <Button
                   type="button"
@@ -91,7 +91,7 @@ export function DessertCard({ dessert, onAddDessertToCart }: DessertCardProps) {
                 >
                   <Minus className="w-4 h-4" />
                 </Button>
-                <span className="text-orange-900 w-12 text-center">{quantity}</span>
+                <span className="text-card-foreground w-12 text-center">{quantity}</span>
                 <Button
                   type="button"
                   variant="outline"
@@ -104,10 +104,10 @@ export function DessertCard({ dessert, onAddDessertToCart }: DessertCardProps) {
               </div>
             </div>
 
-            <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+            <div className="bg-accent p-4 rounded-lg border border-border">
               <div className="flex justify-between items-center">
-                <span className="text-orange-900">Total</span>
-                <span className="text-orange-900">€{getCurrentPrice().toFixed(2)}</span>
+                <span className="text-card-foreground">Total</span>
+                <span className="text-card-foreground font-semibold">€{getCurrentPrice().toFixed(2)}</span>
               </div>
             </div>
           </div>
