@@ -105,11 +105,12 @@ export function Reviews() {
   }
 };
   return (
-    <div className="p-8 bg-orange-50/30 min-h-screen">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <div>
-          <h2 className="text-orange-900 mb-2">Reseñas de Clientes</h2>
-          <p className="text-orange-700">Comparte tu experiencia con nosotros</p>
+    <div className="py-12 bg-card min-h-screen">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        {/* Header */}
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-foreground">Reseñas de Clientes</h2>
+          <p className="text-muted-foreground mt-2">Comparte tu experiencia con nosotros</p>
         </div>
 
         {/* Resumen de calificaciones */}
@@ -117,8 +118,8 @@ export function Reviews() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-center gap-8">
               <div className="text-center">
-                <div className="text-orange-900 mb-2">{averageRating.toFixed(1)}</div>
-                <div className="flex gap-1 mb-2">
+                <div className="text-4xl font-bold text-destructive">{averageRating.toFixed(1)}</div>
+                <div className="flex gap-1 mt-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                       key={star}
@@ -130,7 +131,7 @@ export function Reviews() {
                     />
                   ))}
                 </div>
-                <p className="text-orange-600">Basado en {reviews.length} reseñas</p>
+                <p className="text-muted-foreground mt-2">Basado en {reviews.length} reseñas</p>
               </div>
             </div>
           </CardContent>
@@ -139,9 +140,9 @@ export function Reviews() {
         {/* Formulario para nueva reseña */}
         <Card className="border-orange-200 bg-white">
           <CardHeader>
-            <CardTitle className="text-orange-900">Deja tu Reseña</CardTitle>
+            <CardTitle className="text-2xl text-foreground">Deja tu Reseña</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6 space-y-6">
             <form onSubmit={handleSubmitReview} className="space-y-4">
               {/* Campo para id_pedido (puedes usar un select si tienes una lista de pedidos) */}
               <div>
@@ -160,8 +161,8 @@ export function Reviews() {
               </div>
 
               <div>
-                <Label className="text-orange-900 mb-2 block">Calificación</Label>
-                <div className="flex gap-2">
+                <Label className="text-foreground block">Calificación</Label>
+                <div className="flex gap-2 mt-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
@@ -184,13 +185,13 @@ export function Reviews() {
               </div>
 
               <div>
-                <Label htmlFor="comment" className="text-orange-900">Tu Comentario</Label>
+                <Label htmlFor="comment" className="text-foreground">Tu Comentario</Label>
                 <Textarea
                   id="comment"
                   value={newReview.comentario}
                   onChange={(e) => setNewReview({ ...newReview, comentario: e.target.value })}
                   placeholder="Cuéntanos sobre tu experiencia..."
-                  className="border-orange-200 mt-2"
+                  className="mt-2 border-border"
                   rows={4}
                   required
                 />

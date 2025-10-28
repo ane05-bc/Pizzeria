@@ -50,14 +50,21 @@ export interface Pizza {
 }
 
 export interface Drink {
-  id: string; // id_producto
-  name: string; // nombre
-  description: string; // descripcion
-  image: string | null; // imagen_url
-  categoryId: string; // id_categoria
-  categoryName: string; // categorias.nombre
-  price: number; // producto_tamanos[0].precio.d[0]
-  available: boolean; // disponible
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  category: string;
+}
+
+export interface Dessert {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  category: string;
 }
 
 export interface Dessert {
@@ -71,14 +78,17 @@ export interface Dessert {
   available: boolean; // disponible
 }
 
+export type ItemCategory = 'pizza' | 'drink' | 'dessert';
+
 export interface CartItem {
   productId: string;
   name: string;
   image: string | null; // Cambiado para permitir null
   size?: string; // Para pizzas (Pequeña, Mediana, Grande)
   quantity: number;
-  price: number; // Precio total (base + extras)
-  //extras?: string[]; // Extras para pizzas
+  price: number;
+  extras: string[];
+  type: ItemCategory;
 }
 
 

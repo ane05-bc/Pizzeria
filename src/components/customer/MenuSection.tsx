@@ -1,11 +1,8 @@
-import { useState, useEffect } from 'react';
-import { PizzaCard } from './PizzaCard';
+import { desserts, drinks, pizzas } from '../../data/mockData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { Card, CardContent } from '../ui/card';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
-import { Button } from '../ui/button';
-import { getProducts } from '@/api/products';
-import { Pizza, Drink, Dessert } from '@/types';
+import { DessertCard } from './DessertCard';
+import { DrinkCard } from './DrinkCard';
+import { PizzaCard } from './PizzaCard';
 
 interface MenuSectionProps {
   onAddToCart: (
@@ -14,96 +11,74 @@ interface MenuSectionProps {
     quantity: number,
     extras: string[]
   ) => void;
-  onAddDrinkToCart: (drinkId: string) => void;
-  onAddDessertToCart: (dessertId: string) => void;
+  onAddDrinkToCart: (drinkId: string, quantity: number) => void; // Ajustado para incluir quantity
+  onAddDessertToCart: (dessertId: string, quantity: number) => void; // Ajustado para incluir quantity
 }
 
 export function MenuSection({ onAddToCart, onAddDrinkToCart, onAddDessertToCart }: MenuSectionProps) {
-  const [menuPizzas, setMenuPizzas] = useState<Pizza[]>([]);
-  const [menuDrinks, setMenuDrinks] = useState<Drink[]>([]);
-  const [menuDesserts, setMenuDesserts] = useState<Dessert[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const { pizzas, drinks, desserts } = await getProducts();
-        setMenuPizzas(pizzas);
-        setMenuDrinks(drinks);
-        setMenuDesserts(desserts);
-      } catch (err: any) {
-        setError('Error al cargar el menú. Intenta de nuevo.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  const mapIdTamanoToSize = (id_tamano: string): 'small' | 'medium' | 'large' => {
-    switch (id_tamano) {
-      case '1':
-        return 'small';
-      case '2':
-        return 'medium';
-      case '3':
-        return 'large';
-      default:
-        return 'medium';
-    }
-  };
-
-  if (loading) {
-    return <div className="p-8 text-center">Cargando menú...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="p-8 text-center text-red-600">
-        {error}
-        <Button
-          className="mt-4 bg-orange-600 hover:bg-orange-700"
-          onClick={() => window.location.reload()}
-        >
-          Reintentar
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="mb-12 text-center">
-        <h2 className="text-orange-900 mb-4">Nuestro Menú</h2>
-        <p className="text-orange-700 max-w-2xl mx-auto">
+        <h2 className="text-3xl font-bold text-foreground mb-4">Nuestro Menú</h2>
+        <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
           Descubre nuestras pizzas artesanales, elaboradas con ingredientes frescos 
           y recetas tradicionales italianas
         </p>
       </div>
 
-      <Tabs defaultValue="pizzas" className="w-full">
-        <TabsList className="bg-white border border-orange-200 mb-8">
-          <TabsTrigger
-            value="pizzas"
-            className="data-[state=active]:bg-orange-600 data-[state=active]:text-white"
+      <Tabs defaultValue="all" className="w-full">
+        <TabsList className="bg-card border-border shadow-md rounded-xl p-2 flex justify-center flex-wrap gap-3">
+          <TabsTrigger 
+            value="all" 
+            className="data-[state=active]:bg-destructive data-[state=active]:text-foreground rounded-md px-6 py-3 transition-colors"
+          >
+            Todo
+          </TabsTrigger>
+          <TabsTrigger 
+            value="pizzas" 
+            className="data-[state=active]:bg-destructive data-[state=active]:text-foreground rounded-md px-6 py-3 transition-colors"
           >
             Pizzas
           </TabsTrigger>
-          <TabsTrigger
-            value="drinks"
-            className="data-[state=active]:bg-orange-600 data-[state=active]:text-white"
+          <TabsTrigger 
+            value="drinks" 
+            className="data-[state=active]:bg-destructive data-[state=active]:text-foreground rounded-md px-6 py-3 transition-colors"
           >
             Bebidas
           </TabsTrigger>
-          <TabsTrigger
-            value="desserts"
-            className="data-[state=active]:bg-orange-600 data-[state=active]:text-white"
+          <TabsTrigger 
+            value="desserts" 
+            className="data-[state=active]:bg-destructive data-[state=active]:text-foreground rounded-md px-6 py-3 transition-colors"
           >
             Postres
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="all">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {pizzas.map((pizza) => (
+              <PizzaCard
+                key={pizza.id}
+                pizza={pizza}
+                onAddToCart={onAddToCart}
+              />
+            ))}
+            {drinks.map((drink) => (
+              <DrinkCard
+                key={drink.id}
+                drink={drink}
+                onAddDrinkToCart={(id, quantity) => onAddDrinkToCart(id, quantity)}
+              />
+            ))}
+            {desserts.map((dessert) => (
+              <DessertCard
+                key={dessert.id}
+                dessert={dessert}
+                onAddDessertToCart={(id, quantity) => onAddDessertToCart(id, quantity)}
+              />
+            ))}
+          </div>
+        </TabsContent>
 
         <TabsContent value="pizzas">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -111,9 +86,7 @@ export function MenuSection({ onAddToCart, onAddDrinkToCart, onAddDessertToCart 
               <PizzaCard
                 key={pizza.id}
                 pizza={pizza}
-                onAddToCart={(pizzaId, sizeId, quantity, extras) =>
-                  onAddToCart(pizzaId, mapIdTamanoToSize(sizeId), quantity, extras)
-                }
+                onAddToCart={onAddToCart}
               />
             ))}
           </div>
@@ -121,68 +94,24 @@ export function MenuSection({ onAddToCart, onAddDrinkToCart, onAddDessertToCart 
 
         <TabsContent value="drinks">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {menuDrinks.map((drink) => (
-              <Card
+            {drinks.map((drink) => (
+              <DrinkCard
                 key={drink.id}
-                className="border-orange-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
-              >
-                <div className="relative h-56">
-                  <ImageWithFallback
-                    src={drink.image || '/placeholder.png'}
-                    alt={drink.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="text-orange-900 mb-2">{drink.name}</h3>
-                  <p className="text-orange-600 mb-4">{drink.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-orange-900">
-                      {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(drink.price || 0)}
-                    </span>
-                    <Button
-                      onClick={() => onAddDrinkToCart(drink.id)}
-                      className="bg-orange-600 hover:bg-orange-700"
-                    >
-                      Agregar
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                drink={drink}
+                onAddDrinkToCart={(id, quantity) => onAddDrinkToCart(id, quantity)}
+              />
             ))}
           </div>
         </TabsContent>
 
         <TabsContent value="desserts">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {menuDesserts.map((dessert) => (
-              <Card
+            {desserts.map((dessert) => (
+              <DessertCard
                 key={dessert.id}
-                className="border-orange-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
-              >
-                <div className="relative h-56">
-                  <ImageWithFallback
-                    src={dessert.image || '/placeholder.png'}
-                    alt={dessert.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="text-orange-900 mb-2">{dessert.name}</h3>
-                  <p className="text-orange-600 mb-4">{dessert.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-orange-900">
-                      {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(dessert.price || 0)}
-                    </span>
-                    <Button
-                      onClick={() => onAddDessertToCart(dessert.id)}
-                      className="bg-orange-600 hover:bg-orange-700"
-                    >
-                      Agregar
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                dessert={dessert}
+                onAddDessertToCart={(id, quantity) => onAddDessertToCart(id, quantity)}
+              />
             ))}
           </div>
         </TabsContent>
