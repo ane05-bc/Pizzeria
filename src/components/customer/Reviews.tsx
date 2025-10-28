@@ -6,24 +6,25 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Star } from 'lucide-react';
 import axios from 'axios';
+import { useAuth } from '@/context/AuthContext';
+
+
 
 interface Review {
-  id_comentario: number;
-  id_pedido: number;
-  id_cliente: number;
+  id: string;
+  id_pedido: string;
+  id_cliente: string;
+  customerName: string;     // ← Usa este campo
   calificacion?: number;
   comentario?: string;
   fecha_comentario: string;
-  clientes: {
-    nombre: string; // Asegúrate de que el modelo de cliente en el backend incluya el nombre
-  };
 }
 
 export function Reviews() {
+  const { access_token } = useAuth(); // ← Esto te da el token
   const [reviews, setReviews] = useState<Review[]>([]);
   const [newReview, setNewReview] = useState({
     id_pedido: 0, // Deberías obtener este valor dinámicamente
-    id_cliente: 0, // Deberías obtener este valor dinámicamente (e.g., desde auth)
     calificacion: 5,
     comentario: '',
   });
@@ -36,19 +37,26 @@ export function Reviews() {
 
   // Cargar reseñas al montar el componente
   useEffect(() => {
-    const fetchReviews = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(API_URL);
-        setReviews(response.data);
-      } catch (err) {
-        setError('Error al cargar las reseñas');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchReviews = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(API_URL, {
+        headers: {
+          Authorization: `Bearer ${access_token}`, // ← También aquí
+        },
+      });
+      setReviews(response.data);
+    } catch (err) {
+      setError('Error al cargar las reseñas');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (access_token) {
     fetchReviews();
-  }, []);
+  }
+}, [access_token]); // ← Depende del token
 
   // Calcular promedio de calificaciones
   const averageRating =
@@ -58,30 +66,44 @@ export function Reviews() {
 
   // Manejar envío de reseña
   const handleSubmitReview = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newReview.comentario?.trim() || newReview.id_pedido === 0 || newReview.id_cliente === 0) {
-      alert('Por favor, completa todos los campos y asegúrate de estar autenticado');
-      return;
-    }
+  e.preventDefault();
 
-    setLoading(true);
-    try {
-      const response = await axios.post(API_URL, {
+  if (!newReview.comentario?.trim() || newReview.id_pedido === 0) {
+    alert('Por favor, completa el pedido y el comentario');
+    return;
+  }
+
+  if (!access_token) {
+    alert('Debes iniciar sesión para dejar una reseña');
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const response = await axios.post(
+      API_URL,
+      {
         id_pedido: newReview.id_pedido,
-        id_cliente: newReview.id_cliente,
         calificacion: newReview.calificacion,
         comentario: newReview.comentario,
-      });
-      setReviews([response.data, ...reviews]);
-      setNewReview({ id_pedido: 0, id_cliente: 0, calificacion: 5, comentario: '' });
-      alert('¡Gracias por tu reseña!');
-    } catch (err) {
-      setError('Error al enviar la reseña');
-    } finally {
-      setLoading(false);
-    }
-  };
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`, // ← Usa access_token
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
+    setReviews([response.data, ...reviews]);
+    setNewReview({ id_pedido: 0, calificacion: 5, comentario: '' });
+    alert('¡Gracias por tu reseña!');
+  } catch (err: any) {
+    setError(err.response?.data?.message || 'Error al enviar la reseña');
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="p-8 bg-orange-50/30 min-h-screen">
       <div className="max-w-6xl mx-auto space-y-8">
@@ -186,39 +208,35 @@ export function Reviews() {
           </CardContent>
         </Card>
 
-        {/* Lista de reseñas */}
-        <div className="space-y-4">
-          <h3 className="text-orange-900">Todas las Reseñas</h3>
-          {loading && <p>Cargando reseñas...</p>}
-          {!loading && reviews.length === 0 && <p>No hay reseñas disponibles.</p>}
-          {reviews.map((review) => (
-            <Card key={review.id_comentario} className="border-orange-200 bg-white">
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <p className="text-orange-900">{review.clientes.nombre}</p>
-                    <p className="text-orange-600">
-                      {new Date(review.fecha_comentario).toLocaleDateString('es-ES')}
-                    </p>
-                  </div>
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`w-4 h-4 ${
-                          star <= (review.calificacion || 0)
-                            ? 'text-yellow-500 fill-yellow-500'
-                            : 'text-gray-300'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <p className="text-orange-700">{review.comentario}</p>
-              </CardContent>
-            </Card>
+        {reviews.map((review) => (
+  <Card key={review.id} className="border-orange-200 bg-white">
+    <CardContent className="pt-6">
+      <div className="flex items-start justify-between mb-3">
+        <div>
+          <p className="text-orange-900 font-medium">
+            {review.customerName || 'Anónimo'}
+          </p>
+          <p className="text-orange-600 text-sm">
+            {new Date(review.fecha_comentario).toLocaleDateString('es-ES')}
+          </p>
+        </div>
+        <div className="flex gap-1">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <Star
+              key={star}
+              className={`w-4 h-4 ${
+                star <= (review.calificacion || 0)
+                  ? 'text-yellow-500 fill-yellow-500'
+                  : 'text-gray-300'
+              }`}
+            />
           ))}
         </div>
+      </div>
+      <p className="text-orange-700">{review.comentario}</p>
+    </CardContent>
+  </Card>
+))}
       </div>
     </div>
   );

@@ -158,14 +158,14 @@ export function CustomerView() {
   };
 
   return (
-    <div className="min-h-screen bg-orange-50/30">
-      <CustomerHeader
-        cartItemCount={cartItems.length}
-        onCartClick={() => setCurrentView('cart')}
-        onNavigate={(section) => setCurrentView(section)}
-        activeSection={currentView === 'cart' ? 'menu' : currentView}
-      />
-      <main className="container mx-auto px-6 py-8">{renderContent()}</main>
-    </div>
-  );
+  <>
+    <CustomerHeader
+      cartItemCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+      onCartClick={() => setCurrentView('cart')}
+      onNavigate={(section) => setCurrentView(section)}
+      activeSection={currentView === 'cart' ? 'menu' : currentView}
+    />
+    {renderContent()}
+  </>
+);
 }

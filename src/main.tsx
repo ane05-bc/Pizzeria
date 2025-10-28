@@ -11,7 +11,8 @@ const root = ReactDOM.createRoot(rootElement);
 
   //createRoot(document.getElementById("root")!).render(<App />);
   //ReactDOM.createRoot(document.getElementById('root')!).render(
-  root.render(
+  //root.render(
+    ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AuthProvider>
       <App />
