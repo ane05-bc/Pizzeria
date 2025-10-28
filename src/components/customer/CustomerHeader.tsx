@@ -1,5 +1,5 @@
 import { Logo } from '@/components/common/Logo';
-import { Info, MapPin, MessageSquare, ShoppingCart, Star, Utensils } from 'lucide-react';
+import { ShoppingCart, Star, Utensils } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -63,13 +63,17 @@ export function CustomerHeader({
 <header 
   className={`
     text-white sticky top-0 z-50 shadow-xl p-0 w-full
-    transition-all duration-300
-    ${isScrolled 
-      ? 'rounded-b-xl opacity-95 backdrop-blur-sm' 
-      : 'rounded-b-none'
-    }
+    transition-all duration-500 ease-in-out
+    ${isScrolled ? 'opacity-95 backdrop-blur-sm' : ''}
   `}
-  style={{ background: 'linear-gradient(to right, #8B1538, #8B1538)' }}
+  style={{ 
+    background: isScrolled 
+      ? 'rgba(139, 21, 56, 0.95)' // Semi-transparente al hacer scroll
+      : '#8B1538', // Sólido al inicio
+    borderBottomLeftRadius: isScrolled ? '0.75rem' : '0',
+    borderBottomRightRadius: isScrolled ? '0.75rem' : '0',
+    transition: 'all 0.5s ease-in-out'
+  }}
 >
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
@@ -79,18 +83,94 @@ export function CustomerHeader({
           
           {/* Navegación: Ocupa más espacio */}
           <nav className="flex space-x-8"> 
-            <a onClick={() => onNavigate('menu')} className={getLinkClassName('menu')}>
-              <Utensils className="w-5 h-5" /> Menú
-            </a>
-            <a onClick={() => onNavigate('reviews')} className={getLinkClassName('reviews')}>
-              <MessageSquare className="w-5 h-5" /> Reseñas
-            </a>
-            <a onClick={() => onNavigate('location')} className={getLinkClassName('location')}>
-              <MapPin className="w-5 h-5" /> Ubicación
-            </a>
-            <a onClick={() => onNavigate('about')} className={getLinkClassName('about')}>
-              <Info className="w-5 h-5" /> Quiénes Somos
-            </a>
+<a 
+  onClick={() => onNavigate('menu')} 
+  className={`flex items-center gap-2 text-lg font-medium px-3 py-2 rounded-md cursor-pointer transition-all duration-300 ease-in-out ${activeSection === 'menu' ? 'bg-black/10' : ''}`}
+  style={{ 
+    color: activeSection === 'menu' ? '#FDE047' : '#FFFFFF',
+    transition: 'color 0.3s ease, background-color 0.3s ease'
+  }}
+  onMouseEnter={(e) => {
+    if (activeSection !== 'menu') {
+      e.currentTarget.style.color = '#FDE047';
+      e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+    }
+  }}
+  onMouseLeave={(e) => {
+    if (activeSection !== 'menu') {
+      e.currentTarget.style.color = '#FFFFFF';
+      e.currentTarget.style.backgroundColor = 'transparent';
+    }
+  }}
+>
+  <Utensils className="w-5 h-5" /> Menú
+</a>
+<a 
+  onClick={() => onNavigate('reviews')} 
+  className={`flex items-center gap-2 text-lg font-medium px-3 py-2 rounded-md cursor-pointer transition-all duration-300 ease-in-out ${activeSection === 'reviews' ? 'bg-black/10' : ''}`}
+  style={{ 
+    color: activeSection === 'reviews' ? '#FDE047' : '#FFFFFF',
+    transition: 'color 0.3s ease, background-color 0.3s ease'
+  }}
+  onMouseEnter={(e) => {
+    if (activeSection !== 'reviews') {
+      e.currentTarget.style.color = '#FDE047';
+      e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+    }
+  }}
+  onMouseLeave={(e) => {
+    if (activeSection !== 'reviews') {
+      e.currentTarget.style.color = '#FFFFFF';
+      e.currentTarget.style.backgroundColor = 'transparent';
+    }
+  }}
+>
+  <Utensils className="w-5 h-5" /> Reseñas
+</a>
+<a 
+  onClick={() => onNavigate('location')} 
+  className={`flex items-center gap-2 text-lg font-medium px-3 py-2 rounded-md cursor-pointer transition-all duration-300 ease-in-out ${activeSection === 'location' ? 'bg-black/10' : ''}`}
+  style={{ 
+    color: activeSection === 'location' ? '#FDE047' : '#FFFFFF',
+    transition: 'color 0.3s ease, background-color 0.3s ease'
+  }}
+  onMouseEnter={(e) => {
+    if (activeSection !== 'location') {
+      e.currentTarget.style.color = '#FDE047';
+      e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+    }
+  }}
+  onMouseLeave={(e) => {
+    if (activeSection !== 'location') {
+      e.currentTarget.style.color = '#FFFFFF';
+      e.currentTarget.style.backgroundColor = 'transparent';
+    }
+  }}
+>
+  <Utensils className="w-5 h-5" /> Ubicación
+</a>
+<a 
+  onClick={() => onNavigate('about')} 
+  className={`flex items-center gap-2 text-lg font-medium px-3 py-2 rounded-md cursor-pointer transition-all duration-300 ease-in-out ${activeSection === 'about' ? 'bg-black/10' : ''}`}
+  style={{ 
+    color: activeSection === 'about' ? '#FDE047' : '#FFFFFF',
+    transition: 'color 0.3s ease, background-color 0.3s ease'
+  }}
+  onMouseEnter={(e) => {
+    if (activeSection !== 'about') {
+      e.currentTarget.style.color = '#FDE047';
+      e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+    }
+  }}
+  onMouseLeave={(e) => {
+    if (activeSection !== 'about') {
+      e.currentTarget.style.color = '#FFFFFF';
+      e.currentTarget.style.backgroundColor = 'transparent';
+    }
+  }}
+>
+  <Utensils className="w-5 h-5" /> ¿Quiénes Somos?
+</a>
           </nav>
           
           <div className="flex items-center gap-4">

@@ -9,7 +9,7 @@ function Logo() {
       </div>
       <div>
         <h1 className="text-2xl font-bold text-white">MrPizza</h1>
-        <p className="text-yellow-300 text-xs">Auténtica pizza</p>
+        <p className="text-yellow-300 text-xs">Pizza única en La Paz</p>
       </div>
     </div>
   );
@@ -33,8 +33,12 @@ export default function CustomerFooter({ onNavigate }: CustomerFooterProps) {
 
   return (
     <footer 
-      className="text-white shadow-2xl rounded-t-3xl mt-12"
-      style={{ backgroundColor: '#8B1538' }}
+      className="text-white shadow-2xl mt-12 overflow-hidden"
+      style={{ 
+        backgroundColor: '#8B1538',
+        borderTopLeftRadius: '1.5rem',
+        borderTopRightRadius: '1.5rem'
+      }}
     >
       <div className="container mx-auto px-6 py-12">
         
@@ -49,14 +53,26 @@ export default function CustomerFooter({ onNavigate }: CustomerFooterProps) {
             </h3>
             
             <div className="space-y-3">
-              <a href="tel:+34987654321" className="flex items-center gap-3 text-white hover:text-yellow-300 transition-colors duration-300 cursor-pointer group">
+              <a 
+                href="tel:+34987654321" 
+                className="flex items-center gap-3 text-white transition-all duration-300 cursor-pointer group"
+                style={{ transition: 'color 0.3s ease' }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#FDE047'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#FFFFFF'}
+              >
                 <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-yellow-400 transition-all duration-300">
                   <Phone className="w-5 h-5 group-hover:text-red-header" />
                 </div>
                 <span>+34 987 654 321</span>
               </a>
               
-              <a href="mailto:contacto@lapizzeria.com" className="flex items-center gap-3 text-white hover:text-yellow-300 transition-colors duration-300 cursor-pointer group">
+              <a 
+                href="mailto:contacto@lapizzeria.com" 
+                className="flex items-center gap-3 text-white transition-all duration-300 cursor-pointer group"
+                style={{ transition: 'color 0.3s ease' }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#FDE047'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#FFFFFF'}
+              >
                 <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-yellow-400 transition-all duration-300">
                   <Mail className="w-5 h-5 group-hover:text-red-header" />
                 </div>
@@ -84,7 +100,10 @@ export default function CustomerFooter({ onNavigate }: CustomerFooterProps) {
               <li>
                 <button 
                   onClick={() => handleNavigation('menu')}
-                  className="text-white hover:text-yellow-300 transition-colors duration-300 text-lg inline-block hover:translate-x-1 transition-transform cursor-pointer"
+                  className="text-white text-lg inline-block cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1"
+                  style={{ transition: 'color 0.3s ease, transform 0.3s ease' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#FDE047'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#FFFFFF'}
                 >
                   Menú
                 </button>
@@ -92,7 +111,10 @@ export default function CustomerFooter({ onNavigate }: CustomerFooterProps) {
               <li>
                 <button 
                   onClick={() => handleNavigation('location')}
-                  className="text-white hover:text-yellow-300 transition-colors duration-300 text-lg inline-block hover:translate-x-1 transition-transform cursor-pointer"
+                  className="text-white text-lg inline-block cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1"
+                  style={{ transition: 'color 0.3s ease, transform 0.3s ease' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#FDE047'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#FFFFFF'}
                 >
                   Ubicación
                 </button>
@@ -100,7 +122,10 @@ export default function CustomerFooter({ onNavigate }: CustomerFooterProps) {
               <li>
                 <button 
                   onClick={() => handleNavigation('reviews')}
-                  className="text-white hover:text-yellow-300 transition-colors duration-300 text-lg inline-block hover:translate-x-1 transition-transform cursor-pointer"
+                  className="text-white text-lg inline-block cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1"
+                  style={{ transition: 'color 0.3s ease, transform 0.3s ease' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#FDE047'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#FFFFFF'}
                 >
                   Reseñas
                 </button>
@@ -108,7 +133,10 @@ export default function CustomerFooter({ onNavigate }: CustomerFooterProps) {
               <li>
                 <button 
                   onClick={() => handleNavigation('about')}
-                  className="text-white hover:text-yellow-300 transition-colors duration-300 text-lg inline-block hover:translate-x-1 transition-transform cursor-pointer"
+                  className="text-white text-lg inline-block cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1"
+                  style={{ transition: 'color 0.3s ease, transform 0.3s ease' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#FDE047'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#FFFFFF'}
                 >
                   Quiénes Somos
                 </button>
@@ -125,7 +153,7 @@ export default function CustomerFooter({ onNavigate }: CustomerFooterProps) {
             <div className="text-left md:text-right">
               <h3 className="text-xl font-bold text-yellow-300 mb-3">Síguenos</h3>
               <p className="text-white/80 mb-4 text-sm max-w-xs">
-                Auténtica pizza italiana hecha con pasión y los mejores ingredientes.
+                Pizza hecha con pasión y los mejores ingredientes.
               </p>
               
               <div className="flex gap-3 justify-start md:justify-end">
@@ -146,7 +174,7 @@ export default function CustomerFooter({ onNavigate }: CustomerFooterProps) {
         {/* Copyright */}
         <div className="mt-6 pt-6 text-center">
           <p className="text-white/70 text-sm">
-            &copy; {new Date().getFullYear()} La Pizzería. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} MrPizza. Todos los derechos reservados.
           </p>
         </div>
       </div>
