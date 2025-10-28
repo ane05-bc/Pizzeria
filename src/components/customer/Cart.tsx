@@ -1,239 +1,210 @@
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Separator } from '../ui/separator';
-import { CartItem } from '../../types';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
-import { Trash2, ShoppingBag, CreditCard, Banknote, Building2 } from 'lucide-react';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { Label } from '../ui/label';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
+// src/components/Cart.tsx
 import { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { CartItem, CreatePedidoDto } from '@/types';
+import { Trash2 } from 'lucide-react';
+import { createOrder } from '@/api/orders';
+import { getIdProductoTamano } from '@/utils/pedido';
+
+// Importa el enum desde types (o desde orders si lo exportas)
+import { TipoPedido } from '@/types';
 
 interface CartProps {
   items: CartItem[];
   onRemoveItem: (productId: string, size?: string) => void;
   onClearCart: () => void;
   onCheckout: (paymentMethod: string, deliveryAddress: string, comments: string) => void;
-  onBackToMenu: () => void; // <-- ACEPTA EL NUEVO PROP
+  onBackToMenu: () => void;
 }
 
 export function Cart({ items, onRemoveItem, onClearCart, onCheckout, onBackToMenu }: CartProps) {
-  const [paymentMethod, setPaymentMethod] = useState('Tarjeta');
+  const [paymentMethod, setPaymentMethod] = useState('');
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [comments, setComments] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const delivery = 3.50;
-  const total = subtotal + delivery;
-
-  const handleCheckout = () => {
-    if (!deliveryAddress.trim()) {
-      alert('Por favor, ingresa una dirección de entrega');
-      return;
-    }
-    onCheckout(paymentMethod, deliveryAddress, comments);
-  };
-
+  const handleCheckoutSubmit = async () => {
+  if (!paymentMethod) {
+    setError('Por favor, selecciona un método de pago.');
+    return;
+  }
+  if (!deliveryAddress || deliveryAddress.trim().length < 5) {
+    setError('Ingresa una dirección válida (mínimo 5 caracteres).');
+    return;
+  }
   if (items.length === 0) {
-    return (
-      <div className="p-8 bg-orange-50/30 min-h-screen">
-        <div className="max-w-4xl mx-auto">
-          <Card className="border-orange-200 bg-white text-center py-12">
-            <CardContent>
-              <ShoppingBag className="w-16 h-16 text-orange-300 mx-auto mb-4" />
-              <h3 className="text-orange-900 mb-2">Tu carrito está vacío</h3>
-              <p className="text-orange-600">Agrega algunas pizzas deliciosas para comenzar</p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
+    setError('El carrito está vacío.');
+    return;
   }
 
-  return (
-    <div className="p-8 bg-orange-50/30 min-h-screen">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          {/* 2. AÑADE ESTE BOTÓN PARA VOLVER */}
-      <Button
-        variant="outline" // O el estilo que prefieras
-        onClick={onBackToMenu} // <-- 3. USA EL PROP AQUÍ
-        className="mb-6 flex items-center gap-2 text-orange-600 border-orange-600 hover:bg-orange-50 hover:text-orange-700"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Seguir comprando
-      </Button>
+  try {
+    const detalle = items.map((item) => {
+      const idProductoTamano = getIdProductoTamano(item.productId, item.size);
+      return {
+        id_producto_tamano: idProductoTamano,  // ← número
+        cantidad: item.quantity,               // ← número
+        notas: item.size ? `Tamaño: ${item.size}` : undefined,
+      };
+    });
 
-          <Button 
-            variant="outline" 
-            onClick={onClearCart}
-            className="border-red-300 text-red-700 hover:bg-red-50"
+    const pedido: CreatePedidoDto = {
+      id_cliente: undefined,
+      id_empleado: 1,                        // ← número
+      id_mesa: undefined,
+      id_almacen: 1,                         // ← número
+      tipo_pedido: TipoPedido.DOMICILIO,     // ← enum → string "Domicilio"
+      descuento: undefined,
+      direccion_entrega: deliveryAddress.trim(),
+      notas: comments?.trim() || undefined,
+      detalle,
+    };
+
+    console.log('Enviando pedido:', pedido);  // ← ¡REVISA ESTO!
+
+    await createOrder(pedido);
+    onCheckout(paymentMethod, deliveryAddress, comments);
+    setError(null);
+  } catch (err: any) {
+    console.error('Error completo:', err);
+    setError('Error al procesar el pedido. Revisa los datos.');
+  }
+};
+  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0) + 3.5;
+
+  return (
+    <div className="container mx-auto px-6 py-8">
+      <h2 className="text-orange-900 text-2xl mb-6">Tu Carrito</h2>
+      {error && (
+        <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-4">
+          {error}
+        </div>
+      )}
+      {items.length === 0 ? (
+        <div className="text-center text-orange-700">
+          <p>Tu carrito está vacío.</p>
+          <Button
+            onClick={onBackToMenu}
+            className="mt-4 bg-orange-600 hover:bg-orange-700"
           >
-            Vaciar Carrito
+            Volver al Menú
           </Button>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Cart Items */}
-          <div className="lg:col-span-2 space-y-4">
-            <Card className="border-orange-200 bg-white">
-              <CardHeader>
-                <CardTitle className="text-orange-900">Productos ({items.length})</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {items.map((item, index) => (
-                  <div key={`${item.productId}-${item.size}-${index}`}>
-                    <div className="flex gap-4">
-                      <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
-                        <ImageWithFallback
-                          src={item.image}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h4 className="text-orange-900">{item.name}</h4>
-                            {item.size && (
-                              <Badge variant="outline" className="border-orange-300 text-orange-700 mt-1">
-                                {item.size}
-                              </Badge>
-                            )}
-                            {item.extras.length > 0 && (
-                              <p className="text-orange-600 mt-1">
-                                Extras: {item.extras.join(', ')}
-                              </p>
-                            )}
-                            <p className="text-orange-700 mt-1">
-                              Cantidad: {item.quantity}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-orange-900">
-                              €{(item.price * item.quantity).toFixed(2)}
-                            </p>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => onRemoveItem(item.productId, item.size)}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50 mt-2"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    {index < items.length - 1 && <Separator className="mt-4 bg-orange-100" />}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Delivery Info */}
-            <Card className="border-orange-200 bg-white">
-              <CardHeader>
-                <CardTitle className="text-orange-900">Información de Entrega</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="address" className="text-orange-900">Dirección de Entrega *</Label>
-                  <Input
-                    id="address"
-                    placeholder="Calle, número, piso..."
-                    value={deliveryAddress}
-                    onChange={(e) => setDeliveryAddress(e.target.value)}
-                    className="border-orange-200 mt-2"
-                    required
+      ) : (
+        <>
+          <div className="space-y-4 mb-6">
+            {items.map((item, index) => (
+              <div
+                key={`${item.productId}-${item.size || index}`}
+                className="flex items-center justify-between border-b border-orange-200 py-4"
+              >
+                <div className="flex items-center space-x-4">
+                  <img
+                    src={item.image || '/placeholder.png'}
+                    alt={item.name}
+                    className="w-16 h-16 object-cover rounded-lg"
                   />
-                </div>
-                <div>
-                  <Label htmlFor="comments" className="text-orange-900">Comentarios (opcional)</Label>
-                  <Textarea
-                    id="comments"
-                    placeholder="Instrucciones especiales para la entrega..."
-                    value={comments}
-                    onChange={(e) => setComments(e.target.value)}
-                    className="border-orange-200 mt-2"
-                    rows={3}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Order Summary */}
-          <div className="lg:col-span-1">
-            <Card className="border-orange-200 bg-white sticky top-24">
-              <CardHeader>
-                <CardTitle className="text-orange-900">Resumen del Pedido</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-orange-700">
-                    <span>Subtotal</span>
-                    <span>€{subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-orange-700">
-                    <span>Envío</span>
-                    <span>€{delivery.toFixed(2)}</span>
-                  </div>
-                  <Separator className="bg-orange-200" />
-                  <div className="flex justify-between text-orange-900">
-                    <span>Total</span>
-                    <span>€{total.toFixed(2)}</span>
+                  <div>
+                    <h3 className="text-orange-900">{item.name}</h3>
+                    {item.size && <p className="text-orange-600">{item.size}</p>}
+                    <p className="text-orange-600">
+                      {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(item.price)} x {item.quantity}
+                    </p>
                   </div>
                 </div>
-
-                <Separator className="bg-orange-200" />
-
-                <div>
-                  <Label className="text-orange-900 mb-3 block">Método de Pago</Label>
-                  <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-                    <div className="flex items-center space-x-2 p-3 rounded-lg border border-orange-200 hover:bg-orange-50">
-                      <RadioGroupItem value="Tarjeta" id="card" />
-                      <Label htmlFor="card" className="flex items-center gap-2 cursor-pointer flex-1">
-                        <CreditCard className="w-4 h-4 text-orange-600" />
-                        <span className="text-orange-900">Tarjeta</span>
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2 p-3 rounded-lg border border-orange-200 hover:bg-orange-50">
-                      <RadioGroupItem value="Efectivo" id="cash" />
-                      <Label htmlFor="cash" className="flex items-center gap-2 cursor-pointer flex-1">
-                        <Banknote className="w-4 h-4 text-orange-600" />
-                        <span className="text-orange-900">Efectivo</span>
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2 p-3 rounded-lg border border-orange-200 hover:bg-orange-50">
-                      <RadioGroupItem value="Transferencia" id="transfer" />
-                      <Label htmlFor="transfer" className="flex items-center gap-2 cursor-pointer flex-1">
-                        <Building2 className="w-4 h-4 text-orange-600" />
-                        <span className="text-orange-900">Transferencia</span>
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <Button 
-                  onClick={handleCheckout}
-                  className="w-full bg-orange-600 hover:bg-orange-700"
-                  size="lg"
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => onRemoveItem(item.productId, item.size)}
+                  className="text-orange-700 border-orange-300"
                 >
-                  Confirmar Pedido
+                  <Trash2 className="w-4 h-4" />
                 </Button>
-
-                <p className="text-orange-600 text-center">
-                  Tiempo estimado de entrega: 30-45 min
-                </p>
-              </CardContent>
-            </Card>
+              </div>
+            ))}
           </div>
-        </div>
-      </div>
+
+          <div className="bg-orange-50 p-4 rounded-lg border border-orange-200 mb-6">
+            <div className="flex justify-between items-center">
+              <span className="text-orange-900">Subtotal</span>
+              <span className="text-orange-900">
+                {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(total - 3.5)}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-orange-900">Envío</span>
+              <span className="text-orange-900">
+                {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(3.5)}
+              </span>
+            </div>
+            <div className="flex justify-between items-center font-semibold">
+              <span className="text-orange-900">Total</span>
+              <span className="text-orange-900">
+                {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(total)}
+              </span>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="paymentMethod" className="text-orange-900">
+                Método de Pago
+              </Label>
+              <select
+                id="paymentMethod"
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                className="w-full p-2 border border-orange-300 rounded-md text-orange-900"
+              >
+                <option value="">Selecciona un método</option>
+                <option value="tarjeta">Tarjeta</option>
+                <option value="efectivo">Efectivo</option>
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="deliveryAddress" className="text-orange-900">
+                Dirección de Entrega
+              </Label>
+              <Input
+                id="deliveryAddress"
+                value={deliveryAddress}
+                onChange={(e) => setDeliveryAddress(e.target.value)}
+                placeholder="Ingresa tu dirección"
+                className="border-orange-300 text-orange-900"
+              />
+            </div>
+            <div>
+              <Label htmlFor="comments" className="text-orange-900">
+                Comentarios
+              </Label>
+              <Input
+                id="comments"
+                value={comments}
+                onChange={(e) => setComments(e.target.value)}
+                placeholder="Notas adicionales para el pedido"
+                className="border-orange-300 text-orange-900"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-between mt-6">
+            <Button
+              onClick={onClearCart}
+              variant="outline"
+              className="border-orange-300 text-orange-700"
+            >
+              Vaciar Carrito
+            </Button>
+            <Button
+              onClick={handleCheckoutSubmit}
+              className="bg-orange-600 hover:bg-orange-700"
+            >
+              Confirmar Pedido
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

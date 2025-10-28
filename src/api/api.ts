@@ -1,12 +1,15 @@
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
 
-const API: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001',
+const API = axios.create({
+  baseURL: 'http://localhost:3001', // Puerto de tu backend
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// Interceptor para añadir el token a las solicitudes
+// Interceptor para agregar el token de autenticación
 API.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('access_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
