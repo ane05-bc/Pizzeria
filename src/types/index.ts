@@ -21,6 +21,14 @@ export interface Drink {
   available: boolean;
 }
 
+export interface Dessert {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+}
+
 export interface Order {
   id: string;
   customerName: string;
