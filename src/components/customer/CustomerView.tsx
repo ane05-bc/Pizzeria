@@ -3,12 +3,13 @@ import { useState } from 'react';
 import { Cart } from './Cart';
 import { CustomerHeader, SectionId } from './CustomerHeader';
 import { Reviews } from './Reviews';
-// IMPORTAMOS POSTRES
+// IMPORTAMOS POSTRES y los datos
 import { desserts, drinks, pizzas } from '../../data/mockData';
-import { CartItem } from '../../types';
-import { AboutUsSection } from './AboutUs'; // Asegúrate de tener este componente
+import { CartItem } from '../../types'; // <<<< CORRECCIÓN: Se añaden los tipos faltantes (Pizza, Drink, Dessert)
+import { AboutUsSection } from './AboutUs';
 import { LocationSection } from './LocationSection';
 import { MenuSection } from './MenuSection';
+
 
 // El tipo de vista ahora incluye las secciones del header y el carrito
 type View = SectionId | 'cart';
@@ -28,9 +29,25 @@ export function CustomerView() {
   ) => {
     const pizza = pizzas.find(p => p.id === pizzaId);
     if (!pizza) return;
-    const basePrice = pizza.sizes[size];
+    
+    // CORRECCIÓN DE TIPADO: Asumo que la pizza tiene una propiedad 'sizes'
+    const basePrice = (pizza as unknown as { sizes: Record<string, number> }).sizes[size]; // Se añade 'unknown as' para forzar la compatibilidad con el tipado 'size'
+    
     const extrasPrice = extras.length * 1.50;
     const totalPrice = basePrice + extrasPrice;
+    
+    // Buscamos si ya existe un item idéntico (mismo id, mismo tamaño)
+    const existingIndex = cartItems.findIndex(
+      item => item.productId === pizza.id && item.size === (size === 'small' ? 'Pequeña' : size === 'medium' ? 'Mediana' : 'Grande')
+    );
+
+    if (existingIndex !== -1) {
+      const updatedItems = [...cartItems];
+      updatedItems[existingIndex].quantity += quantity; // Sumamos la cantidad nueva
+      setCartItems(updatedItems);
+      return; // Salimos de la función
+    }
+    
     const cartItem: CartItem = {
       productId: pizza.id,
       name: pizza.name,
@@ -38,7 +55,8 @@ export function CustomerView() {
       size: size === 'small' ? 'Pequeña' : size === 'medium' ? 'Mediana' : 'Grande',
       quantity,
       price: totalPrice,
-      extras
+      extras,
+      type: 'pizza' // <<<< Importante añadir el tipo si Cart.tsx lo necesita
     };
     setCartItems([...cartItems, cartItem]);
   };
@@ -46,6 +64,17 @@ export function CustomerView() {
   const addDrinkToCart = (drinkId: string) => {
     const drink = drinks.find(d => d.id === drinkId);
     if (!drink) return;
+    
+    // Buscamos si la bebida ya existe (no tiene size)
+    const existingIndex = cartItems.findIndex(item => item.productId === drink.id && !item.size);
+
+    if (existingIndex !== -1) {
+      const updatedItems = [...cartItems];
+      updatedItems[existingIndex].quantity += 1;
+      setCartItems(updatedItems);
+      return;
+    }
+    
     const cartItem: CartItem = {
       productId: drink.id,
       name: drink.name,
@@ -53,16 +82,26 @@ export function CustomerView() {
       quantity: 1,
       price: drink.price,
       extras: [],
-      // Añade una propiedad 'type' o 'category' si tu CartItem lo necesita.
-      // Si solo acepta 'size', tendrás que adaptar tu `CartItem` type.
+      type: 'drink' // <<<< Importante añadir el tipo
     };
     setCartItems([...cartItems, cartItem]);
   };
-  
-  // FUNCIÓN PARA AGREGAR POSTRES (NUEVA)
-  const addDessertToCart = (dessertId: string) => {
+  
+  // FUNCIÓN PARA AGREGAR POSTRES (NUEVA)
+  const addDessertToCart = (dessertId: string) => {
     const dessert = desserts.find(d => d.id === dessertId);
     if (!dessert) return;
+    
+    // Buscamos si el postre ya existe (no tiene size)
+    const existingIndex = cartItems.findIndex(item => item.productId === dessert.id && !item.size);
+
+    if (existingIndex !== -1) {
+      const updatedItems = [...cartItems];
+      updatedItems[existingIndex].quantity += 1;
+      setCartItems(updatedItems);
+      return;
+    }
+    
     const cartItem: CartItem = {
       productId: dessert.id,
       name: dessert.name,
@@ -70,40 +109,56 @@ export function CustomerView() {
       quantity: 1,
       price: dessert.price,
       extras: [],
+      type: 'dessert' // <<<< Importante añadir el tipo
     };
     setCartItems([...cartItems, cartItem]);
   };
 
   const removeFromCart = (productId: string, size?: string) => {
-    // Tu lógica para remover elementos del carrito es correcta. 
-    // Para bebidas/postres sin 'size', se debe pasar `undefined` o omitir el segundo argumento.
     const index = cartItems.findIndex(
-      // Si item.size es undefined (bebida/postre) y size es undefined, coincide.
       item => item.productId === productId && item.size === size 
     );
-    if (index !== -1) {
-      const newCartItems = [...cartItems];
-      newCartItems.splice(index, 1);
-      setCartItems(newCartItems);
-    }
+    
+    if (index !== -1) {
+      const newCartItems = [...cartItems];
+      // Si la cantidad es mayor a 1, solo reducimos la cantidad
+      if (newCartItems[index].quantity > 1) {
+        newCartItems[index].quantity -= 1;
+        setCartItems(newCartItems);
+      } else {
+        // Si la cantidad es 1, eliminamos el ítem
+        newCartItems.splice(index, 1);
+        setCartItems(newCartItems);
+      }
+    }
   };
 
   const clearCart = () => {
     setCartItems([]);
   };
 
+  // <<<< MODIFICACIÓN CLAVE: ELIMINAMOS EL ALERT NATIVO
+  // Esta función ahora solo registra el pedido y vacía el carrito.
   const handleCheckout = (paymentMethod: string, deliveryAddress: string, comments: string) => {
-    // ... (Tu lógica de checkout se mantiene)
-    alert(
-      `¡Pedido confirmado!\n\n` +
-      `Método de pago: ${paymentMethod}\n` +
-      `Dirección: ${deliveryAddress}\n` +
-      `Total: €${(cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) + 3.50).toFixed(2)}\n\n` +
-      `Recibirás tu pedido en 30-45 minutos.`
-    );
+    // 1. Aquí iría la llamada a la API o lógica de registro del pedido
+    console.log("Pedido procesado:", { 
+      items: cartItems, // Nota: esto registra el estado ANTES de limpiarse
+      paymentMethod, 
+      deliveryAddress, 
+      comments 
+    });
+
+    // 2. Limpiamos el carrito (lo que permite a Cart.tsx mostrar el mensaje de éxito)
     clearCart();
-    setCurrentView('menu'); 
+    
+    // NOTA: NO cambiamos la vista aquí, Cart.tsx se encargará de mostrar el mensaje de éxito
+    // y luego de llamar a onBackToMenu (que sí llama a setCurrentView('menu')).
   };
+  
+  // Función auxiliar para volver al menú
+  const handleBackToMenu = () => {
+    setCurrentView('menu');
+  };
   
   // --- FIN DE LAS FUNCIONES DE CARRITO ---
 
@@ -117,8 +172,8 @@ export function CustomerView() {
           items={cartItems}
           onRemoveItem={removeFromCart}
           onClearCart={clearCart}
-          onCheckout={handleCheckout}
-          onBackToMenu={() => setCurrentView('menu')}
+          onCheckout={handleCheckout} // <<<< FUNCIÓN SIN ALERT
+          onBackToMenu={handleBackToMenu} // <<<< FUNCIÓN PARA VOLVER DESDE EL ÉXITO
         />
       );
     }
@@ -131,7 +186,7 @@ export function CustomerView() {
           <MenuSection 
             onAddToCart={addToCart} 
             onAddDrinkToCart={addDrinkToCart}
-            onAddDessertToCart={addDessertToCart} // PASAMOS EL NUEVO PROP
+            onAddDessertToCart={addDessertToCart} // <<<< PASAMOS EL HANDLER DE POSTRES
           />
         );
       case 'reviews':
@@ -141,13 +196,14 @@ export function CustomerView() {
       case 'about':
         return <AboutUsSection />;
       default:
+        // Manejamos el caso por defecto, asegurando que se muestre el menú si no es una vista válida
         return (
-          <MenuSection 
-            onAddToCart={addToCart} 
-            onAddDrinkToCart={addDrinkToCart}
-            onAddDessertToCart={addDessertToCart} // DEFAULT TAMBIÉN
-          />
-        );
+          <MenuSection 
+            onAddToCart={addToCart} 
+            onAddDrinkToCart={addDrinkToCart}
+            onAddDessertToCart={addDessertToCart} 
+          />
+        );
     }
   };
 
@@ -157,8 +213,9 @@ export function CustomerView() {
         cartItemCount={cartItems.length} 
         onCartClick={() => setCurrentView('cart')}
         onNavigate={(section) => setCurrentView(section)}
-        // Usamos 'menu' como activo si estamos en el carrito para no desmarcar nada
-        activeSection={currentView === 'cart' ? 'menu' : currentView} 
+        // <<<< MODIFICACIÓN CLAVE: Pasamos la vista actual y el activo
+        activeSection={currentView === 'cart' ? 'menu' : currentView as SectionId}
+        currentView={currentView} // <<<< PASAMOS EL ESTADO COMPLETO PARA CONTROLAR EL BADGE
       />
 
       <main className="container mx-auto px-6 py-8">

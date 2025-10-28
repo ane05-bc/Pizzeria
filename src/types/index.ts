@@ -109,6 +109,8 @@ export interface PurchaseItem {
   total: number;
 }
 
+export type ItemCategory = 'pizza' | 'drink' | 'dessert';
+
 export interface CartItem {
   productId: string;
   name: string;
@@ -117,6 +119,7 @@ export interface CartItem {
   quantity: number;
   price: number;
   extras: string[];
+  type: ItemCategory;
 }
 
 export interface Review {
