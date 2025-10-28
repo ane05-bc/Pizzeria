@@ -3,7 +3,11 @@ import { useAuth } from '../../context/AuthContext';
 import { Logo } from '@/components/common/Logo';
 import API from '@/api/api';
 
-export function Login() {
+interface LoginProps {
+  onBack?: () => void;
+}
+
+export function Login({ onBack }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -21,8 +25,10 @@ export function Login() {
 
       const { access_token, user, sessionId } = response.data;
 
-      // Llamar a login con un objeto
       login({ user, access_token, sessionId });
+
+      // ✅ Volver a la vista pública luego de iniciar sesión
+      if (onBack) onBack();
 
     } catch (err: any) {
       setError(
@@ -33,14 +39,30 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-orange-50">
+    <div className="min-h-screen flex items-center justify-center bg-orange-50 relative">
+
+      {/* ✅ Botón Volver opcional */}
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="absolute top-4 left-4 text-orange-700 hover:text-orange-800 font-bold"
+        >
+          ⬅ Volver
+        </button>
+      )}
+
       <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-xl rounded-lg border border-orange-200">
         <div className="flex flex-col items-center">
           <Logo size={80} rounded bordered />
-          <h1 className="text-3xl font-bold text-gray-800 mt-4"><b>Bienvenido a Mr. Pizza</b></h1>
-          <h6 className="text-3xl font-bold text-gray-800 mt-4"> ¡El Señor Sabor!</h6>
+          <h1 className="text-3xl font-bold text-gray-800 mt-4">
+            <b>Bienvenido a Mr. Pizza</b>
+          </h1>
+          <h6 className="text-3xl font-bold text-gray-800 mt-1">
+            ¡El Señor Sabor!
+          </h6>
           <p className="text-gray-500">Inicia sesión para continuar ...</p>
         </div>
+
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -53,9 +75,11 @@ export function Login() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@pizzeria.com"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                focus:outline-none focus:ring-orange-500 focus:border-orange-500"
             />
           </div>
+
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Contraseña
@@ -67,15 +91,22 @@ export function Login() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                focus:outline-none focus:ring-orange-500 focus:border-orange-500"
             />
           </div>
+
           {error && (
             <p className="text-sm text-red-600 bg-red-100 p-2 rounded-md">{error}</p>
           )}
+
           <button
             type="submit"
-            className="w-full py-2 px-4 border border-transparent rounded-md shadow-lg text-white font-medium bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all"
+            className="w-full py-2 px-4 rounded-md shadow-lg text-white font-medium 
+              bg-gradient-to-r from-orange-600 to-orange-700
+              hover:from-orange-700 hover:to-orange-800 
+              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 
+              transition-all"
           >
             Iniciar Sesión
           </button>
